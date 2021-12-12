@@ -5,11 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,18 +23,36 @@ import com.example.contentprovider.compose.TitleText
 import com.example.contentprovider.data.Contact
 import com.example.contentprovider.ui.theme.lightGray150
 import com.example.contentprovider.ui.theme.lightGray600
+import com.example.contentprovider.ui.theme.lightGray800
 
 @Composable
 fun ContactsListScreen(
     viewModel: MainActivityViewModel,
     onPhoneClick: (Long) -> Unit,
-    onFABClick: () -> Unit
+    onFABClick: () -> Unit,
+    onTopAppBarClick: () -> Unit
 ) {
     val contacts = viewModel.contacts
     val isLoading = viewModel.isLoading.value
     Scaffold(
-        floatingActionButton = { AddContactButton(onFABClick) }
+        floatingActionButton = { AddContactButton(onFABClick) },
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Custom content provider ->", color = Color.White) },
+                backgroundColor = lightGray800,
+                actions = {
+                    IconButton(onClick = { onTopAppBarClick() }) {
+                        Icon(
+                            Icons.Filled.List,
+                            contentDescription = "Custom provider screen",
+                            tint = Color.White
+                        )
+                    }
+                }
+            )
+        }
     ) {
+
         LazyColumn(
             contentPadding = PaddingValues(6.dp),
             modifier = Modifier
@@ -44,7 +61,7 @@ fun ContactsListScreen(
         ) {
             item { TitleText(stringResource(R.string.contacts), 45.sp) }
             items(
-                items = contacts.sortedBy { it.name[0] },
+                items = contacts.filter { it.name.isNotEmpty() }.sortedBy { it.name[0] },
                 itemContent = {
                     ContactList(
                         item = it,

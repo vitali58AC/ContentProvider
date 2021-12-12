@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-kapt'
+    id "org.jetbrains.kotlin.kapt"
 }
 
 android {
@@ -89,10 +89,19 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.4.0"
     //ViewModel Compose
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$view_model_version"
-    implementation "androidx.compose.runtime:runtime-livedata:1.1.0-beta03"
+    implementation "androidx.compose.runtime:runtime-livedata:1.1.0-beta04"
     //Без этого нет возможности вызвать viewModel()
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$view_model_version"
 
     //Status bat color
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
+
+    def moshi_version = '1.12.0'
+    implementation("com.squareup.moshi:moshi:$moshi_version")
+    implementation("com.squareup.moshi:moshi-kotlin:$moshi_version")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshi_version")
+
+    //FlowRow
+    implementation "com.google.accompanist:accompanist-flowlayout:0.21.4-beta"
+
 }

@@ -10,21 +10,26 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.navigation.compose.rememberNavController
 import com.example.contentprovider.compose.NavigationComponent
+import com.example.contentprovider.costume_content_provider.CustomContentViewModel
 import com.example.contentprovider.ui.theme.ContentProviderTheme
 import permissions.dispatcher.PermissionRequest
 import permissions.dispatcher.ktx.constructPermissionsRequest
 
+@ExperimentalFoundationApi
 class MainActivity : AppCompatActivity() {
 
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
+    private val customContentViewModel: CustomContentViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         contactsPermissions()
+        customContentViewModel.saveDefaultTables()
         setContent {
             ContentProviderTheme {
                 Surface(color = MaterialTheme.colors.background) {
@@ -32,7 +37,8 @@ class MainActivity : AppCompatActivity() {
                     NavigationComponent(
                         navController = navController,
                         viewModel = mainActivityViewModel,
-                        context = this
+                        context = this,
+                        customContentViewModel = customContentViewModel
                     )
                 }
             }

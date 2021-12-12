@@ -8,7 +8,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.contentprovider.data.Contact
 import kotlinx.coroutines.launch
-import java.lang.RuntimeException
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -21,6 +20,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         contacts.clear()
         contacts.addAll(newContacts)
     }
+
 
     fun getProfile(id: Long?): Contact {
         return try {
@@ -50,6 +50,18 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     fun deleteContact(id: Long) {
         viewModelScope.launch {
             repository.deleteContact(id)
+        }
+    }
+
+    fun saveContact(name: String, phone: String, email: String) {
+        viewModelScope.launch {
+            try {
+                repository.saveContact(name, phone, email) { id ->
+                    contacts.add(Contact(id, name, listOf(phone), listOf(email)))
+                }
+            } catch (t: Throwable) {
+                Log.e("viewModel", "catch three $t")
+            }
         }
     }
 

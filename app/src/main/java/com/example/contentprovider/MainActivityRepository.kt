@@ -1,9 +1,11 @@
 package com.example.contentprovider
 
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
+import android.util.Log
 import com.example.contentprovider.data.Contact
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -99,15 +101,58 @@ class MainActivityRepository(private val context: Context) {
         )
     }
 
-
-    // удалить контакт
-/*    suspend fun deleteContact(contactId: Long) {
+    suspend fun saveContact(name: String, phone: String, email: String, sendId: (Long) -> Unit) =
         withContext(Dispatchers.IO) {
-            val contactUri =
-                ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
-            context.contentResolver.delete(contactUri, null, null)
+            val id = saveRawContact()
+            saveContactName(id, name)
+            saveContactPhone(id, phone)
+            saveContactEmail(id, email)
+            sendId(id)
         }
-    }*/
 
+    private fun saveRawContact(): Long {
+        val uri = context.contentResolver.insert(
+            ContactsContract.RawContacts.CONTENT_URI,
+            ContentValues()
+        )
+        Log.e("Repository", "uri= $uri")
+        return uri?.lastPathSegment?.toLongOrNull() ?: error("Can't save raw contact")
+    }
 
+    private fun saveContactName(id: Long, name: String) {
+        val contentValues = ContentValues().apply {
+            put(ContactsContract.Data.RAW_CONTACT_ID, id)
+            put(
+                ContactsContract.Data.MIMETYPE,
+                ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
+            )
+            put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+        }
+        context.contentResolver.insert(ContactsContract.Data.CONTENT_URI, contentValues)
+    }
+
+    private fun saveContactPhone(id: Long, phone: String) {
+        val contentValues = ContentValues().apply {
+            put(ContactsContract.Data.RAW_CONTACT_ID, id)
+            put(
+                ContactsContract.Data.MIMETYPE,
+                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
+            )
+            put(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+
+        }
+        context.contentResolver.insert(ContactsContract.Data.CONTENT_URI, contentValues)
+    }
+
+    private fun saveContactEmail(id: Long, email: String) {
+        val contentValues = ContentValues().apply {
+            put(ContactsContract.Data.RAW_CONTACT_ID, id)
+            put(
+                ContactsContract.Data.MIMETYPE,
+                ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE
+            )
+            put(ContactsContract.CommonDataKinds.Email.ADDRESS, email)
+        }
+        context.contentResolver.insert(ContactsContract.Data.CONTENT_URI, contentValues)
+    }
 }

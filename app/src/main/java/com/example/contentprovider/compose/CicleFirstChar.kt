@@ -14,6 +14,7 @@ import com.example.contentprovider.ui.theme.lightGray200
 
 @Composable
 fun CircleFirstChar(name: String, size: Dp, fontSize: TextUnit) {
+    val firstChar = if (name.isNotEmpty()) name.first().toString() else "-"
     Box(
         modifier = Modifier
             .clip(CircleShape)
@@ -25,7 +26,7 @@ fun CircleFirstChar(name: String, size: Dp, fontSize: TextUnit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = name.first().toString(), fontSize = fontSize)
+            Text(text = firstChar, fontSize = fontSize)
         }
     }
 }

@@ -2,8 +2,10 @@ package com.example.contentprovider.compose
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -18,7 +20,9 @@ import com.example.contentprovider.compose.costume_provider.CourseDetailScreen
 import com.example.contentprovider.compose.costume_provider.CustomContentProviderScreen
 import com.example.contentprovider.compose.costume_provider.UserDetailScreen
 import com.example.contentprovider.compose.detail_contact.DetailContactScreen
+import com.example.contentprovider.compose.file_share.FileShareScreen
 import com.example.contentprovider.costume_content_provider.CustomContentViewModel
+import com.example.contentprovider.file_share.FileShareViewModel
 import com.example.contentprovider.utils.Constants
 
 @Composable
@@ -26,7 +30,8 @@ fun NavigationComponent(
     navController: NavHostController,
     viewModel: MainActivityViewModel,
     context: Context,
-    customContentViewModel: CustomContentViewModel
+    customContentViewModel: CustomContentViewModel,
+    fileShareViewModel: FileShareViewModel
 ) {
     NavHost(
         navController = navController,
@@ -42,7 +47,8 @@ fun NavigationComponent(
                     )
                 },
                 onFABClick = { navController.navigate(Constants.ADD_CONTACT) },
-                onTopAppBarClick = { navController.navigate((Constants.COSTUME_PROVIDER)) }
+                onTopBarProviderClick = { navController.navigate(Constants.COSTUME_PROVIDER) },
+                onTopBarShareClick = { navController.navigate(Constants.FILE_SHARE)}
             )
         }
         composable(
@@ -73,23 +79,7 @@ fun NavigationComponent(
             )
         }
         composable(Constants.COSTUME_PROVIDER) {
-            CustomContentProviderScreen(
-                onUserClick = { id ->
-                    navigateToSingleAccount(
-                        navController,
-                        id,
-                        Constants.USER_DETAIL
-                    )
-                },
-                onCourseClick = { id ->
-                    navigateToSingleAccount(
-                        navController,
-                        id,
-                        Constants.COURSE_DETAIL
-                    )
-                },
-                viewModel = customContentViewModel
-            )
+            CustomContentProviderCall(navController, context, customContentViewModel)
         }
         composable(
             route = "${Constants.USER_DETAIL}/{id}",
@@ -106,6 +96,9 @@ fun NavigationComponent(
             val courseId = entry.arguments?.getLong("id")
             val course = customContentViewModel.getCourse(courseId)
             CourseDetailScreen(course = course)
+        }
+        composable(Constants.FILE_SHARE) {
+            FileShareScreen(fileShareViewModel)
         }
     }
 }
@@ -136,4 +129,80 @@ private fun showDeleteDialog(
         .setNegativeButton("No") { _, _ -> }
         .setMessage(messageResId)
         .show()
+}
+
+@Composable
+fun CustomContentProviderCall(
+    navController: NavHostController,
+    context: Context,
+    customContentViewModel: CustomContentViewModel
+) {
+    CustomContentProviderScreen(
+        onUserClick = { id ->
+            navigateToSingleAccount(
+                navController,
+                id,
+                Constants.USER_DETAIL
+            )
+        },
+        onCourseClick = { id ->
+            navigateToSingleAccount(
+                navController,
+                id,
+                Constants.COURSE_DETAIL
+            )
+        },
+        viewModel = customContentViewModel,
+        onClickAdd = {
+            Toast.makeText(
+                context,
+                customContentViewModel.addDeleteOperationResult.value,
+                Toast.LENGTH_SHORT
+            ).show()
+        },
+        onClickSearch = { id ->
+            customContentViewModel.getUserFromId(id,
+                { longId ->
+                    if (longId != -1L) {
+                        navigateToSingleAccount(
+                            navController,
+                            longId,
+                            Constants.USER_DETAIL
+                        )
+                    }
+                },
+                {
+                    Toast.makeText(
+                        context,
+                        customContentViewModel.errorWithGetFromId.value,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                })
+        },
+        onClickDelete = {
+            Toast.makeText(
+                context,
+                customContentViewModel.addDeleteOperationResult.value,
+                Toast.LENGTH_SHORT
+            ).show()
+        },
+        onClickClear = {
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    Toast.makeText(
+                        context,
+                        customContentViewModel.addDeleteOperationResult.value,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }, 0
+            )
+        },
+        onClickUpdate = {
+            Toast.makeText(
+                context,
+                customContentViewModel.addDeleteOperationResult.value,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    )
 }

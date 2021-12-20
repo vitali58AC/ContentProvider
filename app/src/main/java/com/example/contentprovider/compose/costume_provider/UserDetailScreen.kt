@@ -6,5 +6,5 @@ import com.example.contentprovider.data.User
 
 @Composable
 fun UserDetailScreen(user: User) {
-    Text(text = "Detail user screen")
+    Text(text = "Detail user screen user is $user")
 }

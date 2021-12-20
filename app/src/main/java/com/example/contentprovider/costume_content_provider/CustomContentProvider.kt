@@ -5,6 +5,7 @@ import android.content.*
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import android.util.Log
 import com.example.contentprovider.BuildConfig
 import com.example.contentprovider.data.Course
 import com.example.contentprovider.data.User
@@ -30,6 +31,7 @@ class CustomContentProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         userPrefs = context!!.getSharedPreferences(Constants.USER_PREFS, Context.MODE_PRIVATE)
         coursesPrefs = context!!.getSharedPreferences(Constants.COURSE_PREFS, Context.MODE_PRIVATE)
+        Log.e("custom_content_provider", "On create ${Thread.currentThread().name}")
         //Вернуть флаг, что значит инициализация прошла успешно
         return true
     }
@@ -116,8 +118,8 @@ class CustomContentProvider : ContentProvider() {
 
     override fun delete(p0: Uri, p1: String?, p2: Array<out String>?): Int {
         return when (uriMatcher.match(p0)) {
-            TYPE_USERS -> deleteUser(p0)
-            TYPE_COURSES -> deleteCourse(p0)
+            TYPE_USER_ID -> deleteUser(p0)
+            TYPE_COURSE_ID -> deleteCourse(p0)
             else -> 0
         }
     }
@@ -151,8 +153,8 @@ class CustomContentProvider : ContentProvider() {
     override fun update(p0: Uri, p1: ContentValues?, p2: String?, p3: Array<out String>?): Int {
         p1 ?: return 0
         return when (uriMatcher.match(p0)) {
-            TYPE_USERS -> updateUser(p0, p1)
-            TYPE_COURSES -> updateCourse(p0, p1)
+            TYPE_USER_ID -> updateUser(p0, p1)
+            TYPE_COURSE_ID -> updateCourse(p0, p1)
             else -> 0
         }
     }
@@ -183,6 +185,7 @@ class CustomContentProvider : ContentProvider() {
         private const val PATH_COURSES = "courses"
 
         const val USER_URI = "content://$AUTHORITIES/$PATH_USERS"
+        const val USER_URI_PASS = "content://$AUTHORITIES/$PATH_USERS/#"
         const val COURSE_URI = "content://$AUTHORITIES/$PATH_COURSES"
 
         private const val TYPE_USERS = 1

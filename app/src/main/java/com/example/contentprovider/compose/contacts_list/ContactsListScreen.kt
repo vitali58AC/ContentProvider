@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,7 +31,8 @@ fun ContactsListScreen(
     viewModel: MainActivityViewModel,
     onPhoneClick: (Long) -> Unit,
     onFABClick: () -> Unit,
-    onTopAppBarClick: () -> Unit
+    onTopBarProviderClick: () -> Unit,
+    onTopBarShareClick: () -> Unit
 ) {
     val contacts = viewModel.contacts
     val isLoading = viewModel.isLoading.value
@@ -38,13 +40,20 @@ fun ContactsListScreen(
         floatingActionButton = { AddContactButton(onFABClick) },
         topBar = {
             TopAppBar(
-                title = { Text(text = "Custom content provider ->", color = Color.White) },
+                title = { Text(text = "Provider and file share ->", color = Color.White) },
                 backgroundColor = lightGray800,
                 actions = {
-                    IconButton(onClick = { onTopAppBarClick() }) {
+                    IconButton(onClick = { onTopBarProviderClick() }) {
                         Icon(
                             Icons.Filled.List,
                             contentDescription = "Custom provider screen",
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(onClick = { onTopBarShareClick() }) {
+                        Icon(
+                            Icons.Filled.Share,
+                            contentDescription = "Share fragment screen",
                             tint = Color.White
                         )
                     }

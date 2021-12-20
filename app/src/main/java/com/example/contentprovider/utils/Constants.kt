@@ -7,6 +7,7 @@ object Constants {
     const val COSTUME_PROVIDER = "costume_content_provider"
     const val USER_DETAIL = "user_detail_screen"
     const val COURSE_DETAIL = "course_detail_screen"
+    const val FILE_SHARE = "share_file"
 
     const val USER_PREFS = "user_shared_prefs"
     const val COURSE_PREFS = "course_shared_prefs"

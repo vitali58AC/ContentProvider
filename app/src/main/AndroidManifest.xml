@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -27,8 +28,9 @@
         </activity>
         <provider
             android:name="com.example.contentprovider.costume_content_provider.CustomContentProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.example.contentprovider.provider"
             android:exported="true"
+            android:grantUriPermissions="true"
             tools:ignore="ExportedContentProvider" />
     </application>
 

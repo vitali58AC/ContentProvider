@@ -18,4 +18,24 @@
     <string name="custom_provider_example">Custom content provider example</string>
     <string name="users_list">Users list</string>
     <string name="courses_list">Courses list</string>
+    <string name="delete_table_row">Delete row in the table</string>
+    <string name="search_table_row">Search table row</string>
+    <string name="add_table_row">Add new table row</string>
+    <string name="clear_table">Clear table</string>
+    <string name="update_table">Update table row</string>
+    <string name="search_table_row_by_id">Search table row by id</string>
+    <string name="search">Search</string>
+    <string name="add_new_user">Add new user</string>
+    <string name="delete">Delete</string>
+    <string name="delete_with_id">Delete table row with id</string>
+    <string name="update">Update</string>
+    <string name="update_user">Update user</string>
+    <string name="enter_user_name">Enter user name</string>
+    <string name="enter_user_age">Enter user age</string>
+    <string name="logo_download_image">Logo image</string>
+    <string name="enter_link_to_download">Enter link to download file:</string>
+    <string name="success_message">File: %1$s success downloaded</string>
+    <string name="error_message">Error: %1$s</string>
+    <string name="un_success_message">The file from this link has already been downloaded</string>
+    <string name="download">Download</string>
 </resources>

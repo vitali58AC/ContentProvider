@@ -1,8 +1,10 @@
 package com.example.contentprovider.costume_content_provider
 
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.util.Log
 import androidx.core.net.toUri
 import com.example.contentprovider.data.Course
 import com.example.contentprovider.data.User
@@ -69,6 +71,7 @@ class CustomContentRepository(private val context: Context) {
     }
 
     suspend fun getAllCourses() = withContext(Dispatchers.IO) {
+        Log.e("custom_repository", "auth ${CustomContentProvider.USER_URI}")
         context.contentResolver.query(
             uriCourse,
             null,
@@ -93,27 +96,66 @@ class CustomContentRepository(private val context: Context) {
         return list
     }
 
-    fun getUserFromId(id: Long): Long? {
+    fun getUserFromId(id: Long): Long {
         return context.contentResolver.query(
+            //ContentProvider.USER_URI_SELECT.toUri(),
             uriUser,
             null,
+            //Это не работает, потому что нет реализации
             "${CustomContentProvider.COLUMN_USER_ID} = ?",
             arrayOf(id.toString()),
             null
         )?.use {
-            getIdFromCursor(it)
-        }?.or(-1L)
+            getIdFromCursor(it, id)
+        } ?: -1
     }
 
-    private fun getIdFromCursor(cursor: Cursor): Long {
-        if (cursor.moveToFirst().not()) return -1L
-        var id: Long
+    private fun getIdFromCursor(cursor: Cursor, targetId: Long): Long {
+        val error = -1L
+        if (cursor.moveToFirst().not()) return error
         do {
             val idIndex = cursor.getColumnIndex(CustomContentProvider.COLUMN_USER_ID)
             val userId = cursor.getString(idIndex)
-            id = userId.toLong()
+            if (userId.toLong() == targetId) return userId.toLong()
         } while (cursor.moveToNext())
-        return id
+        return error
+    }
+
+    suspend fun saveOneUser(user: User) = withContext(Dispatchers.IO) {
+        ContentValues().apply {
+            put(CustomContentProvider.COLUMN_USER_ID, user.id)
+            put(CustomContentProvider.COLUMN_USER_NAME, user.name)
+            put(CustomContentProvider.COLUMN_USER_AGE, user.age)
+            context.contentResolver.insert(
+                uriUser,
+                this
+            )
+        }
+    }
+
+    suspend fun deleteUserFromId(id: Long) = withContext(Dispatchers.IO) {
+        val resultUri = ContentUris.withAppendedId(CustomContentProvider.USER_URI_PASS.toUri(), id)
+        context.contentResolver.delete(
+            resultUri,
+            null,
+            null
+        )
+    }
+
+
+    suspend fun updateUserFromId(id: Long, name: String, age: Int) = withContext(Dispatchers.IO) {
+        val resultUri = ContentUris.withAppendedId(CustomContentProvider.USER_URI_PASS.toUri(), id)
+        val contentValues = ContentValues().apply {
+            put(CustomContentProvider.COLUMN_USER_ID, id)
+            put(CustomContentProvider.COLUMN_USER_NAME, name)
+            put(CustomContentProvider.COLUMN_USER_AGE, age)
+        }
+        context.contentResolver.update(
+            resultUri,
+            contentValues,
+            null,
+            null
+        )
     }
 
 }

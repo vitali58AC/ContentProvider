@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Environment
 import android.util.Log
 import com.example.contentprovider.data.Networking
 import java.io.ByteArrayOutputStream
@@ -73,9 +74,11 @@ class FileShareRepository {
         fileName: String,
         url: String
     ) {
-
-        val internalFileDir = context.filesDir
-        val image = File(internalFileDir, fileName)
+        if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) return
+        val dir = context.getExternalFilesDir("saved_files")
+        val image = File(dir,fileName)
+/*        val internalFileDir = context.filesDir
+        val image = File(internalFileDir, fileName)*/
         image.createNewFile()
         try {
             image.outputStream().use { fileOutputStream ->

@@ -42,8 +42,21 @@ fun FileShareScreen(viewModel: FileShareViewModel) {
         DownloadButton(
             text = "Share URL text",
             onCLick = { shareText(viewModel.url.value, context) })
-        //Теперь нужно добавить загрузку файлов и их отправку в другое приложение, начни со скринов
-        //и репозитория
+        DownloadButton(
+            text = "Save png from url to file",
+            onCLick = {
+                viewModel.getPngFromUrl(
+                    context,
+                    viewModel.url.value.split("/").last(),
+                    viewModel.url.value
+                )
+            }
+        )
+        DownloadButton(
+            text = "Share png",
+            onCLick = { viewModel.sharePng(context) },
+            enabled = viewModel.downloadPngStatus.value
+        )
         if (downloadStatus) {
             DownloadStatusToast(viewModel.fileName.value, context, viewModel)
         }
@@ -56,6 +69,6 @@ private fun shareText(text: String, context: Context) {
         putExtra(Intent.EXTRA_TEXT, text)
         type = "text/plain"
     }
-    val shareIntent = Intent.createChooser(intent,null)
+    val shareIntent = Intent.createChooser(intent, null)
     context.startActivity(shareIntent)
 }

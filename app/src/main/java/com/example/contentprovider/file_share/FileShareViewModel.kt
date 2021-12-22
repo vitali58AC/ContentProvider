@@ -75,6 +75,8 @@ class FileShareViewModel : ViewModel() {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 putExtra(Intent.EXTRA_STREAM, uri)
                 type = context.contentResolver.getType(uri)
+                //права приложению, что делать с файлом
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             }
             val shareIntent = Intent.createChooser(intent, null)
             context.startActivity(shareIntent)
